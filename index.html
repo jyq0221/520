@@ -1,160 +1,604 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>浪漫告白</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            font-family: 'Arial', sans-serif;
-        }
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-        .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: #fff;
-        }
-        #nameForm {
-            opacity: 1;
-            transition: opacity 0.5s;
-        }
-        #nameForm.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        input {
-            padding: 10px 20px;
-            font-size: 18px;
-            border: 2px solid #fff;
-            border-radius: 25px;
-            background: transparent;
-            color: #fff;
-            outline: none;
-            margin-bottom: 15px;
-        }
-        button {
-            padding: 10px 30px;
-            font-size: 18px;
-            border: none;
-            border-radius: 25px;
-            background: #ff69b4;
-            color: #fff;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        button:hover {
-            transform: scale(1.1);
-        }
-        #message {
-            display: none;
-            font-size: 48px;
-            color: #ff69b4;
-            text-shadow: 0 0 10px #ff69b4;
-            animation: fadeInScale 1s ease-out;
-        }
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>物理实验数据回归助手</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --green: #c8f7c5;
+      --deep-green: #72b26d;
+      --border: #b8e6b4;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1f2d3d;
+      --muted: #6b7280;
+      --accent: #2c7be5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #f0f8ff, #f9fbff 40%),
+                  radial-gradient(circle at 80% 0%, #e8f7ff, transparent 35%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(120deg, #6ee7b7, #3b82f6);
+      color: #fff;
+      padding: 28px 20px 24px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: -40px auto 60px;
+      padding: 0 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.06);
+      padding: 18px;
+      border: 1px solid #e6e8f0;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2 span.badge {
+      display: inline-block;
+      padding: 3px 10px;
+      font-size: 12px;
+      background: #e0f2fe;
+      color: #0369a1;
+      border-radius: 999px;
+      border: 1px solid #bae6fd;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    thead tr {
+      background: var(--green);
+      color: #0f5132;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      text-align: center;
+    }
+
+    tbody tr:nth-child(odd) {
+      background: #f8fff8;
+    }
+
+    tbody tr:hover {
+      background: #eefbf0;
+    }
+
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    .section-description {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(44, 123, 229, 0.2);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s;
+    }
+
+    button.secondary {
+      background: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.18);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(44, 123, 229, 0.24);
+    }
+
+    .layout-two-column {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: start;
+      margin-top: 12px;
+    }
+
+    .formula-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .formula {
+      background: #f7fbe7;
+      border: 1px solid #e5f3c5;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+      color: #1f2937;
+      line-height: 1.4;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .stat {
+      padding: 10px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .stat .value {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .pill-title {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ecfeff;
+      color: #0f172a;
+      border: 1px solid #bae6fd;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .muted-table-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    canvas {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 8px;
+    }
+  </style>
 </head>
 <body>
-    <div id="particles-js"></div>
-    <div class="container">
-        <form id="nameForm">
-            <input type="text" id="nameInput" placeholder="请输入名字" required>
-            <br>
-            <button type="submit">确定</button>
-        </form>
-        <div id="message"></div>
+  <header>
+    <h1>物理实验数据回归助手</h1>
+    <p>仿照实验室记录表，一站式录入、可视化与 OLS 线性拟合</p>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div class="card">
+        <h2>电极法测量液体介电常数 <span class="badge">初始数据</span></h2>
+        <div class="section-description">保持绿底的表格样式，可以快速录入多组样本距离与电压数据。示例值可直接覆盖。</div>
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">项目</th>
+              <th>数值</th>
+              <th>备注</th>
+              <th>标记</th>
+            </tr>
+          </thead>
+          <tbody id="liquid-body">
+          </tbody>
+        </table>
+        <div class="actions">
+          <button id="add-liquid">添加一行</button>
+          <button class="secondary" id="reset-liquid">重置示例</button>
+        </div>
+        <div class="muted-table-note">列出了多档试验电压与多次平行测量，可用作背景数据存档。</div>
+      </div>
+
+      <div class="card">
+        <h2>同轴线控气介实验 <span class="badge">分档读数</span></h2>
+        <div class="section-description">以距离为 X 轴、不同输出电压下的电容为纵向列，便于观察随距离变化的趋势。</div>
+        <table>
+          <thead>
+            <tr>
+              <th>D/mm</th>
+              <th>C/pF 1,000</th>
+              <th>C/pF 1,500</th>
+              <th>C/pF 2,000</th>
+            </tr>
+          </thead>
+          <tbody id="air-body">
+          </tbody>
+        </table>
+        <div class="actions">
+          <button id="add-air">添加一行</button>
+          <button class="secondary" id="reset-air">重置示例</button>
+        </div>
+        <div class="muted-table-note">输入任意距离与对应电容，后续可导入回归表或导出到其他系统。</div>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        document.getElementById('nameForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('nameInput').value;
-            if (name.trim() === '') return;
 
-            this.classList.add('hidden');
-            const message = document.getElementById('message');
-            message.style.display = 'block';
-            message.textContent = `${name}我爱你`;
-        });
+    <div class="card" style="margin-top: 16px;">
+      <h2>回归拟合空气介电常数实验结果 <span class="badge">OLS</span></h2>
+      <div class="section-description">右侧图像与公式区域模仿了实验室软件风格，左侧数据表用于拟合。X 默认填 1/D，Y 取对应的 C（pF）。</div>
 
-        particlesJS('particles-js', {
-            particles: {
-                number: {
-                    value: 80,
-                    density: {
-                        enable: true,
-                        value_area: 800
-                    }
-                },
-                color: {
-                    value: '#ff69b4'
-                },
-                shape: {
-                    type: 'circle'
-                },
-                opacity: {
-                    value: 0.5,
-                    random: false
-                },
-                size: {
-                    value: 3,
-                    random: true
-                },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: '#ff69b4',
-                    opacity: 0.4,
-                    width: 1
-                },
-                move: {
-                    enable: true,
-                    speed: 3,
-                    direction: 'none',
-                    random: false,
-                    straight: false,
-                    out_mode: 'out',
-                    bounce: false
-                }
+      <div class="layout-two-column">
+        <div>
+          <div class="actions">
+            <button id="add-regression">添加数据行</button>
+            <button class="secondary" id="fill-regression">填充示例数据</button>
+            <button id="run-regression">运行 OLS 回归</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>1/D (1/mm)</th>
+                <th>C (pF)</th>
+              </tr>
+            </thead>
+            <tbody id="regression-body"></tbody>
+          </table>
+          <div class="muted-table-note">保持 2 行及以上才可回归，系统会自动处理空白与无效值。</div>
+
+          <div class="stat-grid" id="stat-grid"></div>
+        </div>
+
+        <div>
+          <div style="padding: 10px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px;">
+            <div class="pill-title">散点 + 拟合直线</div>
+            <canvas id="chart" height="240"></canvas>
+          </div>
+
+          <div class="pill-title" style="margin-top: 10px;">计算公式与符号说明</div>
+          <div class="formula-board">
+            <div class="formula">
+              <strong>回归系数</strong><br>
+              Y = B·X + A<br>
+              B = (Σxy - (Σx)(Σy)/n) / (Σx² - (Σx)²/n)<br>
+              A = ȳ - B·x̄
+            </div>
+            <div class="formula">
+              <strong>相关性</strong><br>
+              r = (Σxy - (Σx)(Σy)/n) / √[(Σx² - (Σx)²/n)(Σy² - (Σy)²/n)]<br>
+              R² = r²
+            </div>
+            <div class="formula">
+              <strong>不确定度</strong><br>
+              s = √(Σe² / (n - 2))<br>
+              s<sub>B</sub> = s / √(Σx² - (Σx)²/n)<br>
+              s<sub>A</sub> = s·√(Σx² / (n(Σx² - (Σx)²/n)))
+            </div>
+            <div class="formula">
+              <strong>符号</strong><br>
+              n: 数据点数；e: 残差；ȳ, x̄: 样本均值；<br>
+              Σxy, Σx², Σy² 分别为乘积与平方和。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const liquidBody = document.getElementById('liquid-body');
+    const airBody = document.getElementById('air-body');
+    const regressionBody = document.getElementById('regression-body');
+    const statGrid = document.getElementById('stat-grid');
+    let chart;
+
+    const liquidTemplate = [
+      { item: '步骤1', value: '测量 D', remark: '基准距离 1.0', mark: '√' },
+      { item: '步骤2', value: 'U₁ = 6.751', remark: '第一次上升', mark: '√' },
+      { item: '步骤3', value: 'U₂ = 6.792', remark: '第二次上升', mark: '√' },
+      { item: '步骤4', value: 'U₃ = 6.766', remark: '第三次上升', mark: '√' },
+      { item: '求平均', value: '6.770', remark: '取三次平均', mark: '√' },
+      { item: '步骤1', value: '测量 D', remark: '基准距离 1.05', mark: '√' },
+      { item: '步骤2', value: 'U₁ = 6.391', remark: '第一次上升', mark: '√' },
+      { item: '步骤3', value: 'U₂ = 6.442', remark: '第二次上升', mark: '√' },
+      { item: '步骤4', value: 'U₃ = 6.423', remark: '第三次上升', mark: '√' },
+      { item: '求平均', value: '6.419', remark: '取三次平均', mark: '√' }
+    ];
+
+    const airTemplate = [
+      { d: '600', c1: '8.105', c15: '6.381', c20: '5.538' },
+      { d: '800', c1: '6.000', c15: '5.284', c20: '4.500' },
+      { d: '1,000', c1: '5.022', c15: '4.315', c20: '3.700' },
+      { d: '1,500', c1: '3.408', c15: '3.020', c20: '2.720' },
+      { d: '2,000', c1: '3.003', c15: '2.730', c20: '2.540' }
+    ];
+
+    const regressionTemplate = [
+      { x: 0.18333, y: 6.7187 },
+      { x: 0.13937, y: 5.5399 },
+      { x: 0.12782, y: 5.1663 },
+      { x: 0.12000, y: 4.7200 },
+      { x: 0.09560, y: 3.5128 },
+      { x: 0.07700, y: 3.0030 }
+    ];
+
+    function renderLiquid(data) {
+      liquidBody.innerHTML = '';
+      data.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${String.fromCharCode(65 + idx)}</td>
+          <td>${row.item}</td>
+          <td><input type="text" value="${row.value}"></td>
+          <td><input type="text" value="${row.remark}"></td>
+          <td><input type="text" value="${row.mark}" style="max-width:60px"></td>
+        `;
+        liquidBody.appendChild(tr);
+      });
+    }
+
+    function renderAir(data) {
+      airBody.innerHTML = '';
+      data.forEach((row) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" value="${row.d}"></td>
+          <td><input type="text" value="${row.c1}"></td>
+          <td><input type="text" value="${row.c15}"></td>
+          <td><input type="text" value="${row.c20}"></td>
+        `;
+        airBody.appendChild(tr);
+      });
+    }
+
+    function renderRegression(data) {
+      regressionBody.innerHTML = '';
+      data.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><input type="number" step="0.0001" value="${row.x ?? ''}" aria-label="x-${idx}"></td>
+          <td><input type="number" step="0.0001" value="${row.y ?? ''}" aria-label="y-${idx}"></td>
+        `;
+        regressionBody.appendChild(tr);
+      });
+    }
+
+    function collectRegressionData() {
+      const rows = Array.from(regressionBody.querySelectorAll('tr'));
+      return rows.map((tr) => {
+        const inputs = tr.querySelectorAll('input');
+        const x = parseFloat(inputs[0].value);
+        const y = parseFloat(inputs[1].value);
+        return { x, y, valid: Number.isFinite(x) && Number.isFinite(y) };
+      }).filter(r => r.valid);
+    }
+
+    function calculateOLS(points) {
+      const n = points.length;
+      const sumX = points.reduce((a, p) => a + p.x, 0);
+      const sumY = points.reduce((a, p) => a + p.y, 0);
+      const sumXY = points.reduce((a, p) => a + p.x * p.y, 0);
+      const sumX2 = points.reduce((a, p) => a + p.x * p.x, 0);
+      const sumY2 = points.reduce((a, p) => a + p.y * p.y, 0);
+      const meanX = sumX / n;
+      const meanY = sumY / n;
+      const denominator = n * sumX2 - sumX * sumX;
+      const slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
+      const intercept = meanY - slope * meanX;
+      const rDen = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+      const r = rDen === 0 ? 0 : (n * sumXY - sumX * sumY) / rDen;
+      const predictions = points.map(p => intercept + slope * p.x);
+      const residuals = points.map((p, i) => p.y - predictions[i]);
+      const sse = residuals.reduce((a, r) => a + r * r, 0);
+      const stdError = Math.sqrt(sse / Math.max(n - 2, 1));
+      const sxx = sumX2 - (sumX * sumX) / n;
+      const seSlope = sxx === 0 ? 0 : stdError / Math.sqrt(sxx);
+      const seIntercept = sxx === 0 ? 0 : stdError * Math.sqrt(sumX2 / (n * sxx));
+
+      return { n, slope, intercept, r, r2: r * r, stdError, seSlope, seIntercept, meanX, meanY };
+    }
+
+    function updateStats(stats) {
+      const format = (v) => Number.isFinite(v) ? v.toFixed(5) : '-';
+      statGrid.innerHTML = '';
+      const rows = [
+        { label: '数据点数 n', value: stats.n },
+        { label: '斜率 B', value: format(stats.slope) },
+        { label: '截距 A', value: format(stats.intercept) },
+        { label: '相关系数 r', value: format(stats.r) },
+        { label: '决定系数 R²', value: format(stats.r2) },
+        { label: '标准差 s', value: format(stats.stdError) },
+        { label: '斜率不确定度 sB', value: format(stats.seSlope) },
+        { label: '截距不确定度 sA', value: format(stats.seIntercept) }
+      ];
+      rows.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'stat';
+        div.innerHTML = `<div class="label">${r.label}</div><div class="value">${r.value}</div>`;
+        statGrid.appendChild(div);
+      });
+    }
+
+    function drawChart(points, stats) {
+      const labels = points.map((p, i) => `点 ${i + 1}`);
+      const scatterData = points.map(p => ({ x: p.x, y: p.y }));
+      const lineXs = [...points].sort((a, b) => a.x - b.x);
+      const lineData = lineXs.map(p => ({ x: p.x, y: stats.intercept + stats.slope * p.x }));
+      const ctx = document.getElementById('chart').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: '测量点',
+              data: scatterData,
+              backgroundColor: '#34d399',
+              borderColor: '#10b981',
+              pointRadius: 4,
+              pointHoverRadius: 6
             },
-            interactivity: {
-                detect_on: 'canvas',
-                events: {
-                    onhover: {
-                        enable: true,
-                        mode: 'repulse'
-                    },
-                    onclick: {
-                        enable: true,
-                        mode: 'push'
-                    },
-                    resize: true
-                }
-            },
-            retina_detect: true
-        });
-    </script>
+            {
+              label: '拟合直线',
+              type: 'line',
+              data: lineData,
+              borderColor: '#3b82f6',
+              borderWidth: 2,
+              fill: false,
+              pointRadius: 0,
+              tension: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { mode: 'nearest', intersect: false }
+          },
+          scales: {
+            x: { title: { display: true, text: '1/D (1/mm)' } },
+            y: { title: { display: true, text: 'C (pF)' } }
+          }
+        }
+      });
+    }
+
+    function runRegression() {
+      const data = collectRegressionData();
+      if (data.length < 2) {
+        alert('请至少保留两行有效的 X、Y 数据。');
+        return;
+      }
+      const stats = calculateOLS(data);
+      updateStats(stats);
+      drawChart(data, stats);
+    }
+
+    document.getElementById('add-liquid').addEventListener('click', () => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${String.fromCharCode(65 + liquidBody.children.length)}</td>
+        <td><input type="text" placeholder="项目"></td>
+        <td><input type="text" placeholder="数值"></td>
+        <td><input type="text" placeholder="备注"></td>
+        <td><input type="text" style="max-width:60px" placeholder="标记"></td>
+      `;
+      liquidBody.appendChild(tr);
+    });
+
+    document.getElementById('reset-liquid').addEventListener('click', () => renderLiquid(liquidTemplate));
+
+    document.getElementById('add-air').addEventListener('click', () => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text"></td>
+        <td><input type="text"></td>
+        <td><input type="text"></td>
+        <td><input type="text"></td>
+      `;
+      airBody.appendChild(tr);
+    });
+
+    document.getElementById('reset-air').addEventListener('click', () => renderAir(airTemplate));
+
+    document.getElementById('add-regression').addEventListener('click', () => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${regressionBody.children.length + 1}</td>
+        <td><input type="number" step="0.0001"></td>
+        <td><input type="number" step="0.0001"></td>
+      `;
+      regressionBody.appendChild(tr);
+    });
+
+    document.getElementById('fill-regression').addEventListener('click', () => {
+      renderRegression(regressionTemplate);
+      runRegression();
+    });
+
+    document.getElementById('run-regression').addEventListener('click', runRegression);
+
+    // 初始化
+    renderLiquid(liquidTemplate);
+    renderAir(airTemplate);
+    renderRegression(regressionTemplate);
+    runRegression();
+  </script>
 </body>
 </html>
