@@ -38,6 +38,16 @@ python app.py coax
 2. 在项目目录下执行：`pyinstaller --noconsole --onefile app.py --name dielectric-tool`
 3. 打包完成后，在 `dist/dielectric-tool.exe` 直接双击即可弹出与上图类似的窗口。
 
+## PR 有冲突怎么办？
+
+当 GitHub 上的 PR 出现 “This branch has conflicts…” 时，可按以下步骤处理：
+
+1. 在本地获取远端主分支最新提交：`git fetch origin && git checkout work && git merge origin/main`（如主分支非 `main`，改为对应名字）。
+2. Git 会标记冲突文件。逐个打开文件，查找 `<<<<<<<`、`=======`、`>>>>>>>` 标记，保留正确内容并删除标记。
+3. 确认解决后运行测试或示例命令，例如 `python -m py_compile app.py` 或 `python app.py bridge --csv your.csv`，确保逻辑正常。
+4. `git add` 已解决的文件并提交：`git commit -m "Resolve merge conflicts"`。
+5. 将更新推送到 PR 分支：`git push`。GitHub 会自动重新评估，冲突消失即可继续评审或合并。
+
 ## 主要公式
 
 - 平板真空电容：\(C_0 = \varepsilon_0 S / h\)，单位换算后 \(C_0/\mathrm{pF} \approx 0.008854\, S_{\mathrm{mm}^2}/h_{\mathrm{mm}}\)
